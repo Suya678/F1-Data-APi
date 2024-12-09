@@ -88,15 +88,15 @@ app.get('/api/constructors', (req, res) => {
 
 // GET single constructor by constructorRef
 app.get('/api/constructors/:ref', (req, res) => {
-    const constructor = constructors.find(c => c.constructorRef === req.params.ref);
+    const ref = req.params.ref.toLowerCase();
+    const constructor = constructors.find(c => c.constructorRef.toLowerCase() === ref);
     !constructor ? sendNoResultsFound(res, `ref: ${req.params.ref}`) : res.json(constructor);
 });
 
 // GET race results for a constructor for a specific season
 app.get('/api/constructorResults/:constructorRef/:year', (req, res) => {
     const year = validateParamIsaNumber(req.params.year);
-    const constructor = constructors.find(c => c.constructorRef === req.params.constructorRef);
-    console.log(constructor);
+    const constructor = constructors.find(c => c.constructorRef.toLowerCase() === req.params.constructorRef.toLowerCase());
 
     if(year === -1){
         return sendInvalidNumber(res, req.params.year);
@@ -108,7 +108,7 @@ app.get('/api/constructorResults/:constructorRef/:year', (req, res) => {
     });
 
     if(yearResultForConstructor.length === 0) {
-        sendNoResultsFound(res, `constructorRef: ${ req.params.constructorRef} for driverRef: ${req.params.year}`);
+        sendNoResultsFound(res, `constructorRef: ${ req.params.constructorRef} for year: ${req.params.year}`);
     } else {
     res.json(yearResultForConstructor);
 
@@ -122,7 +122,8 @@ app.get('/api/drivers', (req, res) => {
 
 // GET single driver by driverRef
 app.get('/api/drivers/:ref', (req, res) => {
-    const driver = drivers.find(c => c.driverRef === req.params.ref);
+    const ref = req.params.ref.toLowerCase();
+    const driver = drivers.find(c => c.driverRef.toLowerCase() === ref);
     !driver ? sendNoResultsFound(res, `driverRef: ${req.params.ref}`) : res.json(driver);
 });
 
@@ -130,7 +131,8 @@ app.get('/api/drivers/:ref', (req, res) => {
 // GET race results for a driver for a specific season
 app.get('/api/driverResults/:driverRef/:year', (req, res) => {
     const year = validateParamIsaNumber(req.params.year);
-    const driver = drivers.find(c => c.driverRef === req.params.driverRef);
+    const driverRef = req.params.driverRef.toLowerCase();
+    const driver = drivers.find(c => c.driverRef.toLowerCase() === driverRef);
 
     if(year === -1){
         return sendInvalidNumber(res, req.params.year);
@@ -161,7 +163,11 @@ app.get('/api/races/season/:year', (req, res) => {
         return race.year === year;
     });
 
-    res.json(yearResults);
+    if(yearResults.length === 0) {
+        sendNoResultsFound(res, `year: ${req.params.year}`);
+    } else {
+        res.json(yearResults);
+    }
 });
 
 // GET a single race by raceId
@@ -191,7 +197,7 @@ app.get('/api/results/race/:id', (req, res) => {
     });
 
     if(allRaceResults.length === 0){
-        sendNoResultsFound(res, `race: '${req.params.year}'`);
+        sendNoResultsFound(res, `race: '${req.params.id}'`);
     } else {
         res.json(allRaceResults);
     }
