@@ -157,8 +157,8 @@ app.get('/api/races/season/:year', (req, res) => {
         return sendInvalidNumber(res, req.params.year);
     }
 
-    const yearResults = results.filter((result)=> {
-        return result.race.year === year;
+    const yearResults = races.filter((race)=> {
+        return race.year === year;
     });
 
     res.json(yearResults);
@@ -171,8 +171,7 @@ app.get('/api/races/id/:id', (req, res) => {
         return sendInvalidNumber(res, req.params.id);
     }
 
-    const race = results.find(c => c.race.id === id);
-    console.log(race);
+    const race = races.find(race => race.id === id);
     if (!race) {
         sendNoResultsFound(res, `id: ${req.params.id}`);
     } else {
